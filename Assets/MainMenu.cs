@@ -5,8 +5,8 @@ public class MainMenu : MonoBehaviour
 {
     public void PlayGame()
     {
-        // Chargez la scène du jeu (remplacez "GameScene" par le nom de votre scène 3D)
-        SceneManager.LoadScene("GameScene");
+        // Chargez la scène du jeu 3D
+        SceneManager.LoadScene("Jeu_3D");
     }
 
     public void QuitGame()

@@ -1,31 +1,75 @@
 using UnityEngine;
 
+[RequireComponent(typeof(Rigidbody))]
 public class FPSCameraMovement : MonoBehaviour
 {
-    public float moveSpeed = 5f; // Vitesse de déplacement avant/arrière
-    public float turnSpeed = 150f; // Vitesse de rotation gauche/droite
+    public float moveSpeed = 5f; // Vitesse de déplacement
+    public float lookSpeedX = 2f; // Sensibilité de la rotation horizontale (gauche/droite) avec la souris
+    public float lookSpeedY = 2f; // Sensibilité de la rotation verticale (haut/bas) avec la souris
+
+    private Rigidbody rb; // Référence au Rigidbody
+    private float rotationX = 0f; // Variable pour limiter la rotation verticale
+    public Transform cameraTransform; // Référence à la caméra enfant
+
+    void Start()
+    {
+        // Initialisation du Rigidbody
+        rb = GetComponent<Rigidbody>();
+        rb.freezeRotation = true; // Empêche la rotation automatique par la physique
+
+        // Si aucune caméra n'est assignée, cherche automatiquement une caméra enfant
+        if (cameraTransform == null)
+        {
+            cameraTransform = GetComponentInChildren<Camera>().transform;
+        }
+    }
 
     void Update()
     {
-        // Déplacement sur l'axe X local de la caméra
-        if (Input.GetKey(KeyCode.DownArrow))
+        HandleRotation(); // Gestion de la rotation avec la souris
+    }
+
+    void FixedUpdate()
+    {
+        HandleMovement(); // Gestion des mouvements avec les touches fléchées
+    }
+
+    void HandleMovement()
+    {
+        // Calcul du déplacement en fonction des touches fléchées
+        Vector3 moveDirection = Vector3.zero;
+
+        if (Input.GetKey(KeyCode.UpArrow)) // Avancer
         {
-            transform.Translate(Vector3.right * moveSpeed * Time.deltaTime, Space.Self); // Déplace à droite
+            moveDirection += transform.forward;
         }
-        if (Input.GetKey(KeyCode.UpArrow))
+        if (Input.GetKey(KeyCode.DownArrow)) // Reculer
         {
-            transform.Translate(Vector3.left * moveSpeed * Time.deltaTime, Space.Self); // Déplace à gauche
+            moveDirection -= transform.forward;
+        }
+        if (Input.GetKey(KeyCode.LeftArrow)) // Aller à gauche
+        {
+            moveDirection -= transform.right;
+        }
+        if (Input.GetKey(KeyCode.RightArrow)) // Aller à droite
+        {
+            moveDirection += transform.right;
         }
 
-        // Rotation gauche/droite sur l'axe Y de la caméra
-        if (Input.GetKey(KeyCode.LeftArrow))
-        {
-            transform.Rotate(Vector3.up, -turnSpeed * Time.deltaTime); // Rotation gauche
-        }
-        if (Input.GetKey(KeyCode.RightArrow))
-        {
-            transform.Rotate(Vector3.up, turnSpeed * Time.deltaTime); // Rotation droite
-        }
+        // Applique le mouvement au Rigidbody
+        Vector3 newPosition = rb.position + moveDirection.normalized * moveSpeed * Time.fixedDeltaTime;
+        rb.MovePosition(newPosition);
+    }
+
+    void HandleRotation()
+    {
+        // Rotation verticale (haut/bas) de la caméra avec la souris
+        rotationX -= Input.GetAxis("Mouse Y") * lookSpeedY;
+        rotationX = Mathf.Clamp(rotationX, -80f, 80f); // Limite de l'angle vertical
+        cameraTransform.localRotation = Quaternion.Euler(rotationX, 0f, 0f); // Applique la rotation verticale
+
+        // Rotation horizontale (gauche/droite) du personnage avec la souris
+        float rotationY = Input.GetAxis("Mouse X") * lookSpeedX;
+        rb.MoveRotation(rb.rotation * Quaternion.Euler(0f, rotationY, 0f)); // Applique la rotation horizontale
     }
 }
-
