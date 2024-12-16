@@ -14,6 +14,12 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Jeu_3D.unity
     guid: b750e80e23834f24298a36f6e34dfcfe
+  - enabled: 1
+    path: "Assets/Scenes/D\xE9faite.unity"
+    guid: 0060c0152a1e5864cbb6bbd9124e1a58
+  - enabled: 1
+    path: Assets/Scenes/Victoire.unity
+    guid: 5262718c37ef46242a00f97355e014d1
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0
